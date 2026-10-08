@@ -73,7 +73,7 @@ class MenuItem:
 
 
 def draw_horizontal_menu(surface, items, selected_index, center_y,
-                          item_width=220, item_height=140, gap=30):
+                       item_width=220, item_height=140, gap=30):
     """
     Dibuixa un menú horitzontal tipus "carrusel" (com el de Kodi/Netflix),
     amb l'element seleccionat ressaltat i una mica més gran.
@@ -98,7 +98,7 @@ def draw_horizontal_menu(surface, items, selected_index, center_y,
 
         if is_selected:
             pygame.draw.rect(surface, config.COLOR_PRIMARY, rect,
-                              width=3, border_radius=16)
+                             width=3, border_radius=16)
 
         if item.icon:
             icon_rect = item.icon.get_rect(center=(rect.centerx, rect.centery - 15))
@@ -112,6 +112,54 @@ def draw_horizontal_menu(surface, items, selected_index, center_y,
             align="center",
         )
         rects.append(rect)
+
+    return rects
+
+
+def draw_grid_menu(surface, items, selected_index, start_y=140, cols=3,
+                   item_width=210, item_height=120, gap_x=20, gap_y=20):
+    """
+    Dibuixa un menú en forma de graella (3 columnes x 2 files) amb targetes grans.
+    Retorna la llista de Pygame Rects per detectar el toc o clic.
+    """
+    rects = []
+    total_grid_width = (cols * item_width) + ((cols - 1) * gap_x)
+    start_x = (surface.get_width() - total_grid_width) // 2
+
+    for index, item in enumerate(items):
+        row = index // cols
+        col = index % cols
+
+        x = start_x + col * (item_width + gap_x)
+        y = start_y + row * (item_height + gap_y)
+
+        rect = pygame.Rect(x, y, item_width, item_height)
+        rects.append(rect)
+
+        is_selected = (index == selected_index)
+
+        bg_color = config.COLOR_PRIMARY if is_selected else config.COLOR_BG_SECONDARY
+        text_color = (255, 255, 255) if is_selected else config.COLOR_TEXT
+
+        draw_rounded_rect(surface, rect, bg_color, radius=14)
+
+        if is_selected:
+            pygame.draw.rect(surface, (255, 255, 255), rect, width=3, border_radius=14)
+
+        if hasattr(item, 'icon') and item.icon:
+            icon_rect = item.icon.get_rect(center=(rect.centerx, rect.centery - 15))
+            surface.blit(item.icon, icon_rect)
+            text_y = rect.bottom - 25
+        else:
+            text_y = rect.centery
+
+        draw_text(
+            surface, getattr(item, 'label', getattr(item, 'text', '')),
+            (rect.centerx, text_y),
+            size=config.FONT_SIZE_TEXT,
+            color=text_color,
+            align="center"
+        )
 
     return rects
 

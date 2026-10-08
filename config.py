@@ -17,8 +17,10 @@ ICONS_DIR = os.path.join(ASSETS_DIR, "icons")
 FONTS_DIR = os.path.join(ASSETS_DIR, "fonts")
 DATA_DIR = os.path.join(BASE_DIR, "data")
 
-# Carpetes on l'usuari pot desar el seu contingut multimèdia.
-# Es poden canviar per rutes reals de la Raspberry Pi (USB, NAS, etc.)
+# Ruta del logo
+LOGO_PATH = os.path.join(ASSETS_DIR, "logo.png")
+
+# Carpetes de contingut multimèdia
 MOVIES_DIR = os.path.join(os.path.expanduser("~"), "MediaCenter", "Pelicules")
 SERIES_DIR = os.path.join(os.path.expanduser("~"), "MediaCenter", "Series")
 BOOKS_DIR = os.path.expanduser("~/media_center/data/books/Libros")
@@ -29,34 +31,31 @@ ROMS_DIR = os.path.join(os.path.expanduser("~"), "MediaCenter", "Roms")
 # ---------------------------------------------------------------------------
 # Pantalla
 # ---------------------------------------------------------------------------
-# A la Raspberry Pi normalment voldrem pantalla completa (FULLSCREEN = True).
-# Durant el desenvolupament a l'ordinador és més còmode una finestra.
 FULLSCREEN = True
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
 FPS = 30
 
-WINDOW_TITLE = "Media Center"
+WINDOW_TITLE = "SofaTV Media Center"
 
 # ---------------------------------------------------------------------------
-# Colors (paleta fosca, estil "media center")
+# Colors (Paleta fosca i elegant basada en SofaTV)
 # ---------------------------------------------------------------------------
-COLOR_BG = (18, 18, 24)
-COLOR_BG_SECONDARY = (28, 28, 36)
-COLOR_PRIMARY = (0, 200, 180)          # accent turquesa
-COLOR_PRIMARY_DARK = (0, 140, 130)
-COLOR_TEXT = (235, 235, 240)
-COLOR_TEXT_MUTED = (150, 150, 160)
-COLOR_SELECTED_BG = (0, 200, 180, 60)  # amb alfa, per superposar
-COLOR_ERROR = (220, 80, 80)
-COLOR_OK = (100, 200, 120)
+COLOR_BG = (15, 22, 33)               # Blau fosc nit (molt fosc per a fons)
+COLOR_BG_SECONDARY = (27, 38, 54)     # Blau fosc mitjà per a targes/botons
+COLOR_PRIMARY = (217, 130, 43)        # Taronja SofaTV (per a elements principals/rellotge)
+COLOR_PRIMARY_DARK = (175, 98, 25)    # Taronja més fosc per a botons premuts
+COLOR_ACCENT = (58, 122, 189)         # Blau viu SofaTV
+COLOR_TEXT = (255, 255, 255)          # Text blanc pur (alta llegibilitat)
+COLOR_TEXT_MUTED = (160, 175, 195)    # Text secundari gris-blau clar
+COLOR_SELECTED_BG = (217, 130, 43, 80)# Fons seleccionat en taronja amb transparència
+COLOR_ERROR = (230, 70, 70)
+COLOR_OK = (80, 200, 120)
 
 # ---------------------------------------------------------------------------
 # Tipografia
 # ---------------------------------------------------------------------------
-# Si no es troba cap fitxer .ttf a ASSETS/fonts, es farà servir la
-# tipografia per defecte de Pygame (pygame.font.get_default_font()).
-FONT_NAME = None       # p.ex. "Roboto-Regular.ttf" dins de FONTS_DIR
+FONT_NAME = None
 FONT_SIZE_TITLE = 48
 FONT_SIZE_MENU = 32
 FONT_SIZE_TEXT = 22
@@ -65,8 +64,6 @@ FONT_SIZE_SMALL = 16
 # ---------------------------------------------------------------------------
 # Xarxa / APIs
 # ---------------------------------------------------------------------------
-# Clau gratuïta d'OpenWeatherMap (cal que l'usuari en generi una pròpia a
-# https://openweathermap.org/api)
 OPENWEATHER_API_KEY = "POSA_AQUI_LA_TEVA_API_KEY"
 WEATHER_CITY = "Barcelona,ES"
 WEATHER_UNITS = "metric"
@@ -75,8 +72,6 @@ WEATHER_LANG = "ca"
 # ---------------------------------------------------------------------------
 # Controls
 # ---------------------------------------------------------------------------
-# Pensat perquè funcioni tant amb teclat com amb un comandament
-# (mapejat com a teclat mitjançant eines com `xboxdrv` o `antimicrox`).
 KEY_UP = "up"
 KEY_DOWN = "down"
 KEY_LEFT = "left"
@@ -84,6 +79,5 @@ KEY_RIGHT = "right"
 KEY_SELECT = "select"
 KEY_BACK = "back"
 
-# Repetició de tecla (per navegar ràpid mantenint premut)
-KEY_REPEAT_DELAY = 400   # ms abans de començar a repetir
-KEY_REPEAT_INTERVAL = 120  # ms entre repeticions
+KEY_REPEAT_DELAY = 400
+KEY_REPEAT_INTERVAL = 120
