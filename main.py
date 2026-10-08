@@ -2,19 +2,15 @@
 main.py
 -------
 Punt d'entrada del Media Center.
-
-Conté:
-    - ModuleManager: gestiona quin mòdul (pantalla) està actiu i
-      permet canviar-hi ("navegar") des de qualsevol mòdul.
-    - El bucle principal de Pygame: gestiona esdeveniments, actualitza
-      l'estat i dibuixa cada frame.
-
-Per afegir un mòdul nou:
-    1. Crea modules/el_meu_modul.py heretant de BaseModule.
-    2. Importa'l aquí i registra'l a ModuleManager.MODULES.
 """
 
+import os
 import sys
+
+# Variables de entorno para SDL2 en consola pura / kmsdrm
+os.environ["SDL_VIDEODRIVER"] = "kmsdrm"
+os.environ["SDL_MOUSE_TOUCH_EVENTS"] = "1"
+
 import pygame
 
 import config
@@ -27,16 +23,7 @@ from modules.weather import WeatherModule
 from modules.network import NetworkModule
 from modules.alarms import AlarmsModule
 
-
 class ModuleManager:
-    """
-    Registra tots els mòduls disponibles i controla quin és l'actiu.
-    Fa de "router" entre pantalles: cada mòdul rep una referència al
-    manager i pot cridar manager.go_to("nom_del_modul") per navegar.
-    """
-
-    # Nom -> classe del mòdul. S'instancien un sol cop (a __init__)
-    # i es reutilitzen, per no perdre el seu estat intern en tornar-hi.
     MODULE_CLASSES = {
         "home": HomeModule,
         "movies": MoviesModule,
@@ -67,7 +54,6 @@ class ModuleManager:
     def quit(self):
         self.running = False
 
-    # Les tres funcions següents simplement deleguen al mòdul actiu.
     def handle_event(self, event):
         self.current.handle_event(event)
 
@@ -97,20 +83,55 @@ def main():
 
     while manager.running:
         dt_ms = clock.tick(config.FPS)
-        dt = dt_ms / 1000.0  # segons, útil per a la lògica dels mòduls
+        dt = dt_ms / 1000.0
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 manager.quit()
+
+            # --- TRADUCCIÓN DE EVENTOS TÁCTILES PARA EL MENÚ ---
+            elif event.type == pygame.FINGERDOWN:
+                # Calculamos coordenadas exactas en píxeles
+                px = int(event.x * config.SCREEN_WIDTH)
+                py = int(event.y * config.SCREEN_HEIGHT)
+
+                # 1. Actualizamos la posición real del cursor de Pygame
+                pygame.mouse.set_pos((px, py))
+
+                # 2. Generamos el evento MOUSEBUTTONDOWN estándar
+                down_event = pygame.event.Event(
+                    pygame.MOUSEBUTTONDOWN,
+                    pos=(px, py),
+                    button=1
+                )
+                manager.handle_event(down_event)
+
+            elif event.type == pygame.FINGERUP:
+                px = int(event.x * config.SCREEN_WIDTH)
+                py = int(event.y * config.SCREEN_HEIGHT)
+
+                pygame.mouse.set_pos((px, py))
+
+                # Generamos el evento MOUSEBUTTONUP estándar
+                up_event = pygame.event.Event(
+                    pygame.MOUSEBUTTONUP,
+                    pos=(px, py),
+                    button=1
+                )
+                manager.handle_event(up_event)
+
             else:
                 manager.handle_event(event)
 
         manager.update(dt)
-        manager.draw(screen)
-        pygame.display.flip()
+
+        # Obtener dinámicamente la superficie por si la pantalla se reabre tras el video
+        current_screen = pygame.display.get_surface()
+        if current_screen is not None:
+            manager.draw(current_screen)
+            pygame.display.flip()
 
     pygame.quit()
-    sys.exit()
 
 
 if __name__ == "__main__":
