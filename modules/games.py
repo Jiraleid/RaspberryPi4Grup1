@@ -3,7 +3,7 @@ games.py
 --------
 Mòdul de consola retro. Escanea la carpeta de ROMs, mostra la llista de jocs,
 el nom, la caràtula i un botó de jugar. Executa la ROM amb RetroArch i el nucli
-de DeSmuME (.nds) u altres consoles, tornant automàticament al Media Center.
+de mGBA (.gba) u altres consoles 2D, tornant automàticament al Media Center.
 """
 
 import os
@@ -15,13 +15,12 @@ from ui_utils import draw_text
 
 # Mapeig d'extensions amb el seu nucli de RetroArch corresponent
 ROM_CORES = {
-    ".nds": "desmume_libretro.so",
-    ".nes": "fceumm_libretro.so",
-    ".sfc": "snes9x_libretro.so",
-    ".smc": "snes9x_libretro.so",
     ".gba": "mgba_libretro.so",
     ".gb": "gambatte_libretro.so",
     ".gbc": "gambatte_libretro.so",
+    ".nes": "fceumm_libretro.so",
+    ".sfc": "snes9x_libretro.so",
+    ".smc": "snes9x_libretro.so",
 }
 
 
@@ -103,10 +102,10 @@ class GamesModule(BaseModule):
         rom_path = game["rom_path"]
         core_filename = ROM_CORES.get(game["ext"])
 
-        # Cerca dinàmica del nucli
+        # Cerca dinàmica de la ruta del nucli
         possible_base_paths = [
-            "/usr/lib/aarch64-linux-gnu/libretro/",
             "/usr/lib/arm-linux-gnueabihf/libretro/",
+            "/usr/lib/aarch64-linux-gnu/libretro/",
             "/usr/lib/libretro/",
             "/usr/local/lib/libretro/"
         ]
@@ -119,16 +118,23 @@ class GamesModule(BaseModule):
                     core_path = full_core
                     break
 
+        if not core_path:
+            self.error_message = f"No s'ha trobat el nucli: {core_filename}"
+            return
+
         # Tancar la pantalla de Pygame per alliberar el controlador gràfic KMS/DRM
         pygame.display.quit()
 
         try:
-            cmd = ["retroarch"]
-            if core_path:
-                cmd.extend(["-L", core_path])
-            cmd.append(rom_path)
+            cmd = [
+                "retroarch",
+                "--config", os.path.expanduser("~/.config/retroarch/retroarch.cfg"),
+                "-L", core_path,
+                rom_path
+            ]
 
-            subprocess.run(cmd, check=True)
+            env = os.environ.copy()
+            subprocess.run(cmd, check=True, env=env)
         except FileNotFoundError:
             self.error_message = "RetroArch no està instal·lat o no és al PATH."
         except Exception as exc:

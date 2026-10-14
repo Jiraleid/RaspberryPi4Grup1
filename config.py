@@ -26,7 +26,7 @@ SERIES_DIR = os.path.join(os.path.expanduser("~"), "MediaCenter", "Series")
 BOOKS_DIR = os.path.expanduser("~/media_center/data/books/Libros")
 COMICS_DIR = os.path.expanduser("~/media_center/data/books/Comics")
 PHOTOS_DIR = os.path.join(os.path.expanduser("~"), "MediaCenter", "Fotos")
-ROMS_DIR = os.path.join(os.path.expanduser("~"), "MediaCenter", "Roms")
+ROMS_DIR = os.path.join(os.path.expanduser("~"), "media_center", "roms")
 
 # ---------------------------------------------------------------------------
 # Pantalla
